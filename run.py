@@ -2,15 +2,28 @@ import pickle
 import cv2
 import mediapipe as mp
 import numpy as np
+import os
+import sys
+
+# Function to get the correct path for data files
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 # Load the pre-trained model
-model_dict = pickle.load(open('./model.p', 'rb'))
+model_dict = pickle.load(open(resource_path('model.p'), 'rb'))
 model = model_dict['model']
 
 # Initialize video capture
 cap = cv2.VideoCapture(0)
 
-# Initialize MediaPipe Hands
+# inisiasi pengenalan tangan dengan mediapipe
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -18,7 +31,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 # Set to track hands across frames
 hands = mp_hands.Hands(static_image_mode=False, min_detection_confidence=0.3)
 
-# Mapping of model predictions to labels
+# Mapping dari model prediksi ke label
 labels_dict = {i: chr(65 + i) for i in range(26)}  # A-Z
 
 while True:
